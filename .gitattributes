@@ -1,0 +1,9 @@
+# Все файлы проекта читает Linux-контейнер, поэтому в рабочей копии держим LF
+# независимо от глобального core.autocrlf на машине разработчика.
+#
+# На подмодуль это НЕ распространяется — у него свой .gitattributes. Если после
+# clone --recurse-submodules на Windows контейнерный git показывает весь
+# vendor/ouroboros изменённым, лечится так:
+#   cd vendor/ouroboros && git config core.autocrlf false && git config core.eol lf
+#   git rm --cached -r . && git reset --hard
+* text=auto eol=lf
