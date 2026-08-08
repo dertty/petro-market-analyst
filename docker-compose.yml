@@ -1,0 +1,48 @@
+services:
+  ouroboros:
+    build:
+      context: .
+      dockerfile: vendor/ouroboros.Dockerfile
+    # Корень проекта отдаётся целиком: иначе внутри контейнера не резолвится .git
+    # подмодуля (у него это файл с относительной ссылкой наружу).
+    volumes:
+      - .:/workspace
+      - ./knowledge:/workspace/data/memory/knowledge
+      - ./skills:/workspace/data/skills/external
+    working_dir: /workspace/vendor/ouroboros
+    environment:
+      OUROBOROS_REPO_DIR: /workspace/vendor/ouroboros
+      OUROBOROS_APP_ROOT: /workspace/data
+      OUROBOROS_DATA_DIR: /workspace/data
+      OUROBOROS_SERVER_HOST: 0.0.0.0
+      OUROBOROS_SERVER_PORT: 8765
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OUROBOROS_RUNTIME_MODE: ${OUROBOROS_RUNTIME_MODE:-light}
+      TOTAL_BUDGET: ${TOTAL_BUDGET:-10.0}
+      OUROBOROS_MODEL: ${OUROBOROS_MODEL:-}
+      OUROBOROS_MODEL_HEAVY: ${OUROBOROS_MODEL_HEAVY:-}
+      OUROBOROS_MODEL_LIGHT: ${OUROBOROS_MODEL_LIGHT:-}
+    # Только на localhost: при пустом сетевом пароле Ouroboros пускает всех.
+    # Хостовый порт по умолчанию 8766, а не 8765, чтобы не конфликтовать с нативной
+    # установкой Ouroboros, если она запущена на этой машине. Внутри сети Docker
+    # порт остаётся 8765, поэтому OUROBOROS_URL приложения от этого не зависит.
+    ports:
+      - "127.0.0.1:${OUROBOROS_HOST_PORT:-8766}:8765"
+    # Сервер штатно перезапускает себя кодом выхода 42; без этого он бы умирал.
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app/app
+    environment:
+      OUROBOROS_URL: http://ouroboros:8765
+      TASK_TIMEOUT_SEC: ${TASK_TIMEOUT_SEC:-600}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ouroboros
+    restart: unless-stopped
