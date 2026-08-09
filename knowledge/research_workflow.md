@@ -1,0 +1,1 @@
+For time-sensitive market forecasts, secure and verify the primary issuer report first; record URL, publication date, exact forecast wording, and scenario before broad secondary searching.

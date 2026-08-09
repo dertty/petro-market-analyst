@@ -1,0 +1,801 @@
+# Реестр источников для сбора корпуса отраслевых отчётов.
+#
+# Единственный список, из которого работает загрузчик (ingest/collect.py). Источник
+# перечисления — oil_industry_reports_rag_catalog.md (66 строк). Каждая строка каталога
+# здесь представлена одной записью со статусом status: collect|skip и, для skip, полем
+# reason. Так отбор проверяем и обратим, а не растворён в решении, принятом один раз в
+# переписке.
+#
+# status: collect — источник качается автосбором.
+# status: skip     — источник в реестре учтён, но не качается. reason:
+#   series  — числовой временной ряд, не документ (эта итерация берёт только документы).
+#             Две строки внутри series спорные (MINFIN-001, DOE-001, см. note) — формально
+#             документ/пресс-релиз, по содержанию число; решение переигрывается сменой
+#             reason на collect одним словом, без правки остальных полей.
+#   access  — требует регистрации или подписки (эта итерация берёт только открытый доступ).
+#   blocked — по каталогу открытый доступ, но при разведке (ingest/probe.py, 2026-08-09)
+#             хост отдал 403/402 и честному User-Agent ingest-скрипта, и стандартному
+#             браузерному (см. note каждой записи). Это защита уровня CDN/WAF, а не
+#             политика доступа издателя — обхода не подбираем, по правилу из design-плана.
+#             landing сохранён, чтобы решение было обратимо сменой status одним словом.
+#
+# access (для collect) — фактический режим доступа: open. Здесь других значений нет: всё,
+# что не open, попало в status: skip, reason: access.
+#
+# license — из чего исходит загрузчик при выборе метода поставки, информационное поле,
+# не юридическая проверка. Перед распространением корпуса — сверить самостоятельно.
+#
+# strategy (для collect) — см. ingest/strategies.py:
+#   date_pattern — URL выводится из календаря без обращения к странице-списку. Использована
+#                  только там, где шаблон подтверждён явной проверкой (см. params.verified).
+#   listing      — GET страницы-списка (params.landing), ссылки на файлы разбираются оттуда;
+#                  URL исторических выпусков заранее не фиксируется.
+#   feed         — постраничный обход ленты событий, окно — depth.months.
+#   single       — один текущий документ без истории; новая версия — по изменившемуся sha256.
+#
+# depth — глубина сбора: months (для monthly/weekly/event) или editions (для annual).
+
+sources:
+
+  # --- OPEC ---------------------------------------------------------------
+
+  # OPEC полностью переведён в skip/blocked по итогам разведки достижимости 2026-08-09
+  # (ingest/probe.py, отчёт в data/corpus/probe-report.json): все пять URL отдают 403
+  # Forbidden как с честным User-Agent ingest-скрипта, так и со стандартным браузерным
+  # User-Agent (curl -A "Mozilla/5.0 ..."), включая корень opec.org. Это защита на уровне
+  # CDN/WAF, а не проверка заголовка — обхода не подбираем, по правилу из плана.
+  # ID и метаданные сохранены, чтобы решение было обратимо сменой status одним словом,
+  # если у OPEC появится другой канал доступа (API, партнёрский фид и т.п.).
+
+  - id: OPEC-001
+    status: skip
+    reason: blocked
+    publisher: OPEC
+    series: Monthly Oil Market Report
+    landing: https://www.opec.org/monthly-oil-market-report.html
+    note: "403 с честным и с браузерным User-Agent при разведке 2026-08-09. Приоритетный источник — пересмотреть при появлении другого канала."
+
+  - id: OPEC-002
+    status: skip
+    reason: blocked
+    publisher: OPEC
+    series: World Oil Outlook
+    landing: https://www.opec.org/world-oil-outlook.html
+    note: "403 при разведке 2026-08-09, см. note у OPEC-001."
+
+  - id: OPEC-003
+    status: skip
+    reason: blocked
+    publisher: OPEC
+    series: Annual Statistical Bulletin
+    landing: https://www.opec.org/annual-statistical-bulletin.html
+    note: "403 при разведке 2026-08-09, см. note у OPEC-001."
+
+  - id: OPEC-004
+    status: skip
+    reason: series
+    publisher: OPEC
+    series: OPEC Reference Basket
+    note: "Ценовой ряд (ORB), не документ."
+
+  - id: OPEC-005
+    status: skip
+    reason: blocked
+    publisher: OPEC
+    series: OPEC+ / JMMC press releases
+    landing: https://www.opec.org/press-releases.html
+    note: "403 при разведке 2026-08-09, см. note у OPEC-001."
+
+  - id: OPEC-006
+    status: skip
+    reason: blocked
+    publisher: OPEC
+    series: OPEC Bulletin
+    landing: https://www.opec.org/opec-bulletin.html
+    note: "403 при разведке 2026-08-09, см. note у OPEC-001."
+
+  # --- IEA ------------------------------------------------------------------
+  # Все серии IEA кроме oil security требуют регистрации или подписки — исключены целиком,
+  # включая IEA как одного из трёх приоритетных издателей в исходном запросе.
+
+  - id: IEA-001
+    status: skip
+    reason: access
+    publisher: IEA
+    series: Oil Market Report
+
+  - id: IEA-002
+    status: skip
+    reason: access
+    publisher: IEA
+    series: Oil 2025 — Analysis and forecast to 2030
+
+  - id: IEA-003
+    status: skip
+    reason: access
+    publisher: IEA
+    series: World Energy Outlook
+
+  - id: IEA-004
+    status: skip
+    reason: access
+    publisher: IEA
+    series: World Energy Investment
+
+  - id: IEA-005
+    status: skip
+    reason: access
+    publisher: IEA
+    series: Gas Market Report
+
+  - id: IEA-006
+    status: skip
+    reason: access
+    publisher: IEA
+    series: Global EV Outlook
+
+  - id: IEA-007
+    status: collect
+    publisher: IEA
+    publisher_slug: iea
+    series: Oil security / emergency response analyses
+    series_slug: oil-security
+    segment: Sanctions/Policy
+    frequency: event
+    landing: https://www.iea.org/topics/energy-security
+    access: open
+    license: site terms
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://www.iea.org/topics/energy-security
+    note: >
+      Единственная открытая позиция IEA в каталоге; остальные — status: skip, reason: access.
+      URL из исходного каталога (topics/oil-security) отдавал 404 при разведке 2026-08-09 —
+      IEA переименовала раздел в topics/energy-security, landing обновлён на актуальный.
+
+  # --- EIA --------------------------------------------------------------
+
+  - id: EIA-001
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Short-Term Energy Outlook
+    series_slug: steo
+    segment: Cross-chain
+    frequency: monthly
+    landing: https://www.eia.gov/outlooks/steo/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: date_pattern
+    params:
+      url: "https://www.eia.gov/outlooks/steo/archives/{d:%b}{d:%y}.pdf"
+      lowercase: true
+      step: month
+      verified: "2026-08-09, WebFetch: архив с 1983, шаблон archives/<mon><yy>.pdf подтверждён"
+
+  - id: EIA-002
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Weekly Petroleum Status Report
+    series_slug: wpsr
+    segment: Downstream
+    frequency: weekly
+    landing: https://www.eia.gov/petroleum/supply/weekly/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: date_pattern
+    params:
+      url: "https://www.eia.gov/petroleum/supply/weekly/archive/{d:%Y}/{d:%Y}_{d:%m}_{d:%d}/wpsr_{d:%Y}_{d:%m}_{d:%d}.php"
+      step: week
+      verified: "2026-08-09, WebFetch: archive/<year>/<Y>_<M>_<D>/wpsr_<Y>_<M>_<D>.php подтверждён"
+    note: "Целевая страница — HTML, не PDF; сохраняется как есть по фактическому Content-Type."
+
+  - id: EIA-003
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Petroleum Supply Monthly
+    series_slug: psm
+    segment: Cross-chain
+    frequency: monthly
+    landing: https://www.eia.gov/petroleum/supply/monthly/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://www.eia.gov/petroleum/supply/monthly/archive/
+    note: >
+      PDF/CSV в этой серии официально прекращены (проверено WebFetch 2026-08-09) —
+      берём то, что реально отдаёт архив (вероятно XLSX/HTML), без выдумывания формата.
+
+  - id: EIA-004
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Annual Energy Outlook
+    series_slug: aeo
+    segment: Macro/Demand
+    frequency: annual
+    landing: https://www.eia.gov/outlooks/aeo/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {editions: 5}
+    strategy: listing
+    params:
+      landing: https://www.eia.gov/outlooks/aeo/archive.php
+    note: "Архивные годовые издания — /outlooks/archive/aeo<YY>/ (подтверждено WebFetch)."
+
+  - id: EIA-005
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: International Energy Outlook
+    series_slug: ieo
+    segment: Macro/Demand
+    frequency: annual
+    landing: https://www.eia.gov/outlooks/ieo/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {editions: 5}
+    strategy: listing
+    params:
+      landing: https://www.eia.gov/outlooks/ieo/ieoarchive.php
+    note: "Издаётся нерегулярно; глубина в изданиях, не в годах."
+
+  - id: EIA-006
+    status: skip
+    reason: series
+    publisher: EIA
+    series: Petroleum & Other Liquids data hub
+    note: "Каталог числовых временных рядов, не документ."
+
+  - id: EIA-007
+    status: skip
+    reason: series
+    publisher: EIA
+    series: EIA Open Data API
+    note: "API числовых рядов."
+
+  - id: EIA-008
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Refinery Capacity Report
+    series_slug: refinery-capacity
+    segment: Downstream
+    frequency: annual
+    landing: https://www.eia.gov/petroleum/refinerycapacity/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {editions: 5}
+    strategy: listing
+    params:
+      landing: https://www.eia.gov/petroleum/refinerycapacity/archive/
+
+  - id: EIA-009
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Country Analysis Briefs
+    series_slug: country-briefs
+    segment: Cross-chain
+    frequency: event
+    landing: https://www.eia.gov/international/analysis/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://www.eia.gov/international/analysis/
+    note: "Публикуется по странам нерегулярно; дата обновления обязательна в манифесте."
+
+  - id: EIA-010
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Monthly Energy Review
+    series_slug: mer
+    segment: Macro/Demand
+    frequency: monthly
+    landing: https://www.eia.gov/totalenergy/data/monthly/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://www.eia.gov/totalenergy/data/monthly/previous.php
+
+  - id: EIA-011
+    status: skip
+    reason: series
+    publisher: EIA
+    series: Europe Brent Spot Price FOB
+    note: "Ценовой ряд Brent, не документ."
+
+  - id: EIA-012
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Market Prices and Uncertainty Report
+    series_slug: price-uncertainty
+    segment: Markets/Pricing
+    frequency: monthly
+    landing: https://www.eia.gov/finance/data.php
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://www.eia.gov/finance/data.php
+    note: >
+      URL из исходного каталога (outlooks/steo/special/) — 403 Forbidden при разведке
+      2026-08-09 (directory listing запрещён, это не бот-защита). Ссылка "Market Prices and
+      Uncertainty Report" со страницы STEO ведёт на finance/data.php — landing обновлён.
+
+  - id: EIA-013
+    status: collect
+    publisher: EIA
+    publisher_slug: eia
+    series: Petroleum Marketing Monthly
+    series_slug: pmm
+    segment: Downstream
+    frequency: monthly
+    landing: https://www.eia.gov/petroleum/marketing/monthly/
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: date_pattern
+    params:
+      url: "https://www.eia.gov/petroleum/marketing/monthly/archive/{d:%Y}/{d:%Y}_{d:%m}/pmm_{d:%Y}_{d:%m}.php"
+      step: month
+      verified: "2026-08-09, WebFetch: archive/<Y>/<Y>_<M>/pmm_<Y>_<M>.php подтверждён"
+
+  - id: EIA-014
+    status: skip
+    reason: series
+    publisher: EIA
+    series: Company-level imports
+    note: "Табличный ряд импорта по компаниям, не документ."
+
+  # --- JODI/IEF -----------------------------------------------------------
+
+  - id: JODI-001
+    status: skip
+    reason: series
+    publisher: JODI/IEF
+    series: JODI-Oil World Database
+    note: "Полный CSV временных рядов."
+
+  - id: JODI-002
+    status: collect
+    publisher: JODI/IEF
+    publisher_slug: jodi
+    series: JODI-Oil highlights and update calendar
+    series_slug: highlights
+    segment: Cross-chain
+    frequency: monthly
+    landing: https://www.jodidata.org/oil/
+    access: open
+    license: site terms
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://www.jodidata.org/oil/
+
+  - id: JODI-003
+    status: skip
+    reason: series
+    publisher: JODI/IEF
+    series: JODI-Gas World Database
+    note: "Полный CSV временных рядов."
+
+  # --- World Bank / IMF -----------------------------------------------------
+
+  - id: WB-001
+    status: collect
+    publisher: World Bank
+    publisher_slug: worldbank
+    series: Commodity Markets Outlook
+    series_slug: cmo
+    segment: Markets/Pricing
+    frequency: annual
+    landing: https://www.worldbank.org/en/research/commodity-markets
+    access: open
+    license: site terms
+    depth: {editions: 5}
+    strategy: listing
+    params:
+      landing: https://www.worldbank.org/en/research/commodity-markets
+    note: "Выходит чаще одного раза в год — глубина в изданиях, не в календарных годах."
+
+  - id: WB-002
+    status: skip
+    reason: series
+    publisher: World Bank
+    series: Pink Sheet
+    note: "Ценовой ряд commodities."
+
+  - id: IMF-001
+    status: skip
+    reason: series
+    publisher: IMF
+    series: Primary Commodity Prices
+    note: "Ценовой ряд commodities."
+
+  - id: IMF-002
+    status: skip
+    reason: blocked
+    publisher: IMF
+    series: World Economic Outlook
+    landing: https://www.imf.org/en/Publications/WEO
+    note: >
+      403 при разведке 2026-08-09 (ingest/probe.py) — и с честным User-Agent ingest-скрипта,
+      и со стандартным браузерным (проверено curl -A "Mozilla/5.0 ..."), включая корень
+      imf.org. Защита на уровне CDN/WAF, не заголовок — обхода не подбираем.
+
+  # --- Energy Institute / Baker Hughes / CFTC / ICE / CME --------------------
+
+  - id: EI-001
+    status: skip
+    reason: access
+    publisher: Energy Institute
+    series: Statistical Review of World Energy
+    note: "Требует регистрации."
+
+  - id: BH-001
+    status: skip
+    reason: series
+    publisher: Baker Hughes
+    series: International & North America Rig Count
+    note: "Числовой ряд буровых установок."
+
+  - id: CFTC-001
+    status: skip
+    reason: series
+    publisher: CFTC
+    series: Commitments of Traders — crude oil
+    note: "Числовой ряд позиционирования."
+
+  - id: ICE-001
+    status: skip
+    reason: access
+    publisher: ICE
+    series: Brent Crude Futures contract specs & reports
+    note: "Рыночные данные частично платные; specs без исторического архива в открытом доступе."
+
+  - id: CME-001
+    status: skip
+    reason: access
+    publisher: CME Group
+    series: WTI Light Sweet Crude Oil Futures
+    note: "Рыночные данные частично платные."
+
+  # --- Ценовые методологии --------------------------------------------------
+
+  - id: SPG-001
+    status: skip
+    reason: blocked
+    publisher: S&P Global Commodity Insights
+    series: Crude Oil Methodology & Specifications
+    landing: https://www.spglobal.com/energy/en/pricing-benchmarks/our-methodology/methodology-specifications/crude-oil
+    note: >
+      403 при разведке 2026-08-09 — и с честным, и с браузерным User-Agent, включая корень
+      spglobal.com. Защита на уровне CDN/WAF, см. note у IMF-002.
+
+  - id: ARGUS-001
+    status: collect
+    publisher: Argus Media
+    publisher_slug: argus
+    series: Argus Crude methodology
+    series_slug: crude-methodology
+    segment: Markets/Pricing
+    frequency: continuous
+    landing: https://www.argusmedia.com/-/media/Files/methodology/argus-crude.ashx
+    access: open
+    license: site terms
+    depth: null
+    strategy: single
+    params:
+      file_url: https://www.argusmedia.com/-/media/Files/methodology/argus-crude.ashx
+
+  - id: ARGUS-002
+    status: collect
+    publisher: Argus Media
+    publisher_slug: argus
+    series: Argus Russian Crude Exports methodology
+    series_slug: russian-crude-exports-methodology
+    segment: Markets/Pricing
+    frequency: continuous
+    landing: https://www.argusmedia.com/en/methodology/methodologies/argus-russian-crude-exports
+    access: open
+    license: site terms
+    depth: null
+    strategy: single
+    params:
+      landing: https://www.argusmedia.com/en/methodology/methodologies/argus-russian-crude-exports
+    note: "Ключевая методология для Urals/ESPO netback."
+
+  # --- Россия: Минфин / ЦБ / Росстат -----------------------------------------
+
+  - id: MINFIN-001
+    status: skip
+    reason: series
+    publisher: Минфин России
+    series: Сообщения о средней цене Urals
+    note: >
+      Спорная (borderline): формально пресс-релиз, по содержанию — число (средняя цена
+      Urals за период). Отнесена к рядам этой итерацией; решение переигрывается сменой
+      status на collect одним словом.
+
+  - id: CBR-001
+    status: collect
+    publisher: Банк России
+    publisher_slug: cbr
+    series: "Russia's Balance of Payments: Assessment"
+    series_slug: balance-of-payments
+    segment: Macro/Demand
+    frequency: event
+    landing: https://www.cbr.ru/eng/analytics/dkp/
+    access: open
+    license: site terms
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://www.cbr.ru/eng/analytics/dkp/
+    note: >
+      URL из исходного каталога (eng/analytics/dkp/bal_of_payments/) отдавал 404 при
+      разведке 2026-08-09. Landing указан на раздел денежно-кредитной политики (200) —
+      точную подстраницу с выпусками должна найти реализация стратегии listing; прямые
+      versioned-ссылки на конкретный PDF из каталога нестабильны и не годятся как landing.
+
+  - id: ROSSTAT-001
+    status: skip
+    reason: series
+    publisher: Росстат
+    series: Промышленное производство / нефть и переработка
+    note: "Табличный статистический ряд, не документ."
+
+  # --- Санкции и price cap ---------------------------------------------------
+
+  - id: OFAC-001
+    status: collect
+    publisher: U.S. Treasury / OFAC
+    publisher_slug: ofac
+    series: Russia sanctions & oil price cap guidance
+    series_slug: russia-sanctions
+    segment: Sanctions/Policy
+    frequency: event
+    landing: https://ofac.treasury.gov/sanctions-programs-and-country-information/russian-harmful-foreign-activities-sanctions
+    access: open
+    license: U.S. Government Work (public domain)
+    depth: {months: 24}
+    strategy: feed
+    params:
+      landing: https://ofac.treasury.gov/sanctions-programs-and-country-information/russian-harmful-foreign-activities-sanctions
+
+  - id: OFSI-001
+    status: collect
+    publisher: UK OFSI
+    publisher_slug: ofsi
+    series: Maritime Services Ban and Oil Price Cap Guidance
+    series_slug: price-cap-guidance
+    segment: Sanctions/Policy
+    frequency: continuous
+    landing: https://www.gov.uk/government/publications/uk-maritime-services-ban-and-oil-price-cap-industry-guidance/uk-maritime-services-ban-and-oil-price-cap-industry-guidance
+    access: open
+    license: Open Government Licence
+    depth: null
+    strategy: single
+    params:
+      landing: https://www.gov.uk/government/publications/uk-maritime-services-ban-and-oil-price-cap-industry-guidance/uk-maritime-services-ban-and-oil-price-cap-industry-guidance
+
+  - id: EU-001
+    status: skip
+    reason: blocked
+    publisher: Council of the EU
+    series: EU sanctions against Russia — timeline & packages
+    landing: https://www.consilium.europa.eu/en/policies/sanctions-against-russia/timeline-sanctions-against-russia/
+    note: >
+      При первой разведке 403 с честным User-Agent, 200 с браузерным через curl — из-за
+      этого ingest/http.py вообще перешёл на браузерный User-Agent (см. header реестра и
+      note у BP-001). Но через httpx (ingest/probe.py) с тем же браузерным UA и тем же
+      заголовком From стабильно 403 на трёх повторах подряд 2026-08-09, хотя curl с теми
+      же заголовками стабильно отдаёт 200. Расхождение — на уровне TLS/HTTP-стека
+      (JA3-фингерпринт), не строки заголовка; воспроизводить отпечаток curl из Python —
+      уже подделка защиты, а не честная идентификация, поэтому не делаем. EUR-Lex (EU-002)
+      даёт первичный правовой текст того же санкционного контура и доступен нормально.
+
+  - id: EU-002
+    status: collect
+    publisher: EUR-Lex
+    publisher_slug: eurlex
+    series: Regulation (EU) No 833/2014 and amendments
+    series_slug: reg-833-2014
+    segment: Sanctions/Policy
+    frequency: continuous
+    landing: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R0833"
+    access: open
+    license: EU public sector information reuse policy
+    depth: null
+    strategy: single
+    params:
+      landing: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014R0833"
+    note: "Консолидированный текст; новая версия при каждой поправке — supersedes в манифесте."
+
+  - id: DOE-001
+    status: skip
+    reason: series
+    publisher: U.S. DOE
+    series: Strategic Petroleum Reserve updates
+    note: >
+      Спорная (borderline): новости вокруг числового ряда запасов SPR, а не самостоятельный
+      документ. Решение переигрывается сменой status на collect одним словом.
+
+  # --- Исследовательские и коммерческие (закрыты по доступу) -----------------
+
+  - id: OIES-001
+    status: skip
+    reason: access
+    publisher: Oxford Institute for Energy Studies
+    series: Oil & Middle East Programme publications
+    note: "Смешанный доступ: часть публикаций платная."
+
+  - id: OIES-002
+    status: skip
+    reason: access
+    publisher: Oxford Institute for Energy Studies
+    series: Russia oil & gas research
+
+  - id: RYSTAD-001
+    status: skip
+    reason: access
+    publisher: Rystad Energy
+    series: Oil Market Balances Report
+
+  - id: WOODMAC-001
+    status: skip
+    reason: access
+    publisher: Wood Mackenzie
+    series: Oil Supply & Forecast
+
+  - id: WOODMAC-002
+    status: skip
+    reason: access
+    publisher: Wood Mackenzie
+    series: North America Crude Oil Runs Forecast
+
+  - id: KPLER-001
+    status: skip
+    reason: access
+    publisher: Kpler
+    series: Oil market intelligence & flows
+
+  - id: VORTEXA-001
+    status: skip
+    reason: access
+    publisher: Vortexa
+    series: Market Insights
+
+  # --- Независимый мониторинг санкций и логистика -----------------------------
+
+  - id: CREA-001
+    status: collect
+    publisher: CREA
+    publisher_slug: crea
+    series: Russia fossil fuel / sanctions trackers
+    series_slug: russia-tracker
+    segment: Sanctions/Policy
+    frequency: event
+    landing: https://energyandcleanair.org/financing-putins-war/
+    access: open
+    license: site terms
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://energyandcleanair.org/financing-putins-war/
+
+  - id: KSE-001
+    status: collect
+    publisher: KSE Institute
+    publisher_slug: kse
+    series: Russia oil tracker / sanctions analysis
+    series_slug: russia-tracker
+    segment: Sanctions/Policy
+    frequency: event
+    landing: https://kse.ua/russia-will-pay/
+    access: open
+    license: site terms
+    depth: {months: 24}
+    strategy: listing
+    params:
+      landing: https://kse.ua/russia-will-pay/
+
+  - id: UNCTAD-001
+    status: skip
+    reason: blocked
+    publisher: UNCTAD
+    series: Review of Maritime Transport
+    landing: https://unctad.org/publication/review-maritime-transport-2025
+    note: >
+      403 при разведке 2026-08-09 — и с честным, и с браузерным User-Agent, включая корень
+      unctad.org. Защита на уровне CDN/WAF, см. note у IMF-002.
+
+  - id: GIIGNL-001
+    status: skip
+    reason: access
+    publisher: GIIGNL
+    series: Annual Report
+    note: "Смешанный доступ: регистрация/условия сайта не гарантируют открытую загрузку PDF."
+
+  - id: GECF-001
+    status: skip
+    reason: access
+    publisher: GECF
+    series: Global Gas Outlook
+    note: "Смешанный доступ: часть выпусков за регистрацией."
+
+  # --- Корпоративные сценарные обзоры -----------------------------------------
+
+  - id: SHELL-001
+    status: collect
+    publisher: Shell
+    publisher_slug: shell
+    series: LNG Outlook
+    series_slug: lng-outlook
+    segment: Midstream
+    frequency: annual
+    landing: https://www.shell.com/energy-and-innovation/natural-gas/lng-outlook.html
+    access: open
+    license: site terms
+    depth: {editions: 5}
+    strategy: listing
+    params:
+      landing: https://www.shell.com/energy-and-innovation/natural-gas/lng-outlook.html
+    note: >
+      URL из исходного каталога (what-we-do/oil-and-natural-gas/...) отдавал 404 при
+      разведке 2026-08-09 — Shell реструктурировал сайт, landing обновлён на актуальный.
+
+  - id: BP-001
+    status: collect
+    publisher: bp
+    publisher_slug: bp
+    series: Energy Outlook
+    series_slug: energy-outlook
+    segment: Macro/Demand
+    frequency: annual
+    landing: https://www.bp.com/en/global/corporate/energy-economics/energy-outlook.html
+    access: open
+    license: site terms
+    depth: {editions: 5}
+    strategy: listing
+    params:
+      landing: https://www.bp.com/en/global/corporate/energy-economics/energy-outlook.html
+    note: "403 при разведке 2026-08-09 с честным User-Agent, 200 с браузерным — см. note у EU-001."
+
+  - id: XOM-001
+    status: collect
+    publisher: ExxonMobil
+    publisher_slug: exxonmobil
+    series: Global Outlook
+    series_slug: global-outlook
+    segment: Macro/Demand
+    frequency: annual
+    landing: https://corporate.exxonmobil.com/what-we-do/energy-supply/global-outlook
+    access: open
+    license: site terms
+    depth: {editions: 5}
+    strategy: listing
+    params:
+      landing: https://corporate.exxonmobil.com/what-we-do/energy-supply/global-outlook
+
+  - id: OECD-001
+    status: skip
+    reason: access
+    publisher: OECD
+    series: Economic Outlook
+    note: "Частично открытый: полные данные за подпиской."

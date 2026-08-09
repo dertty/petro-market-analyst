@@ -1,2 +1,15 @@
 data/
 .env
+
+# Векторный индекс — генерат: пересобирается из reports/pdf одной командой
+# (scripts/build_index.py) и весит мегабайты, которым нечего делать в истории.
+reports/index/
+
+# Байткод Python — генерат
+__pycache__/
+*.pyc
+
+# Кэши инструментов и артефакты прогонов — не часть проекта
+.firecrawl/
+.playwright-mcp/
+eval_runs/

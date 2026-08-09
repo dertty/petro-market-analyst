@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: vendor/ouroboros.Dockerfile
+    # Имя задано явно, хотя совпадает с тем, что compose сгенерировал бы сам: на него
+    # ссылается сервис skill-enable, чтобы не собирать второй образ той же сборки.
+    image: petro-market-analyst-ouroboros
     # Корень проекта отдаётся целиком: иначе внутри контейнера не резолвится .git
     # подмодуля (у него это файл с относительной ссылкой наружу).
     volumes:
@@ -10,27 +13,118 @@ services:
       - ./knowledge:/workspace/data/memory/knowledge
       - ./skills:/workspace/data/skills/external
     working_dir: /workspace/vendor/ouroboros
-    environment:
+    # Якорь, а не копия: этот же блок читает settings-seed, чтобы спроецировать
+    # значения в data/settings.json. Копия списка неминуемо разъехалась бы.
+    environment: &runtime-env
       OUROBOROS_REPO_DIR: /workspace/vendor/ouroboros
       OUROBOROS_APP_ROOT: /workspace/data
       OUROBOROS_DATA_DIR: /workspace/data
       OUROBOROS_SERVER_HOST: 0.0.0.0
       OUROBOROS_SERVER_PORT: 8765
+      # Через сколько секунд без сердцебиения маркер идущего ревью считается брошенным.
+      # Дефолт рантайма — 7200. Опущено потому, что вторая проверка, «жив ли процесс-
+      # владелец», в контейнере не работает: сервер после перезапуска получает тот же
+      # низкий PID, что записан в маркере, и выглядит живым владельцем чужого ревью.
+      # Перезапуск во время проверки скилла блокировал бы его на два часа (запись 30).
+      # 300 безопасно: живое ревью обновляет отметку каждые 30 секунд.
+      OUROBOROS_SKILL_REVIEW_JOB_STALE_SEC: 300
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # Скилл oil_price_forecast читает ключ прямо из окружения процесса: он грузится
+      # внутри процесса сервера, поэтому переменную видит. Через settings.json ключ
+      # потребовал бы owner-grant, привязанного к хешу содержимого скилла, и любая
+      # правка кода этот grant сбрасывала бы.
+      EIA_API_KEY: ${EIA_API_KEY:-}
+      # Скилл gdelt-mcp, в отличие от oil_price_forecast, из окружения процесса ключ
+      # НЕ читает: он берёт его через PluginAPI.get_settings, то есть из settings.json.
+      # А само окружение туда этот ключ не донесёт — вендор накладывает env только по
+      # своим ключам (config.py:1336). Проброс нужен исключительно затем, чтобы значение
+      # увидел settings-seed ниже: он и кладёт ключ на диск. Owner-grant, которого это
+      # требует, выдаёт skill-enable.
+      GDELT_API_KEY: ${GDELT_API_KEY:-}
       OUROBOROS_RUNTIME_MODE: ${OUROBOROS_RUNTIME_MODE:-light}
       TOTAL_BUDGET: ${TOTAL_BUDGET:-10.0}
       OUROBOROS_MODEL: ${OUROBOROS_MODEL:-}
       OUROBOROS_MODEL_HEAVY: ${OUROBOROS_MODEL_HEAVY:-}
       OUROBOROS_MODEL_LIGHT: ${OUROBOROS_MODEL_LIGHT:-}
+      # Резервная модель. Без проброса действует вендорский дефолт того же
+      # семейства, что и основная, а такое переключение убивает задачу — разбор
+      # в .env.example и в PROBLEMS.md, запись 32.
+      OUROBOROS_MODEL_FALLBACKS: ${OUROBOROS_MODEL_FALLBACKS:-}
+      OUROBOROS_REVIEW_MODELS: ${OUROBOROS_REVIEW_MODELS:-}
+      # Усилие рассуждений судей. Вендорский дефолт high, наш — low: разбор
+      # в .env.example.
+      OUROBOROS_EFFORT_REVIEW: ${OUROBOROS_EFFORT_REVIEW:-low}
+      # Слот не стреляет (такого типа задач приложение не создаёт), но вендорский
+      # дефолт по нему — $5/$30 за M, самый дорогой тариф в сборке.
+      OUROBOROS_MODEL_DEEP_SELF_REVIEW: ${OUROBOROS_MODEL_DEEP_SELF_REVIEW:-}
+      OUROBOROS_WEBSEARCH_MODEL: ${OUROBOROS_WEBSEARCH_MODEL:-}
+      # Поиск по отчётам (скилл petro_rag). Модели сменные: строка вида
+      # <провайдер>:<модель>, поддерживаются fastembed (локально) и openai (API).
+      # Смена эмбеддера требует пересборки индекса — векторы несравнимы.
+      # Пустой PETRO_RAG_RERANKER выключает переранжирование: быстрее на ~2 с,
+      # но ложные срабатывания на посторонних вопросах растут с 43% до 86%
+      # (замеры в skills/petro_rag/tests/README.md).
+      PETRO_RAG_MODELS: /workspace/data/models
+      PETRO_RAG_INDEX: /workspace/reports/index
+      PETRO_RAG_EMBEDDER: ${PETRO_RAG_EMBEDDER:-fastembed:intfloat/multilingual-e5-large}
+      PETRO_RAG_RERANKER: ${PETRO_RAG_RERANKER-fastembed:jinaai/jina-reranker-v2-base-multilingual}
     # Только на localhost: при пустом сетевом пароле Ouroboros пускает всех.
     # Хостовый порт по умолчанию 8766, а не 8765, чтобы не конфликтовать с нативной
     # установкой Ouroboros, если она запущена на этой машине. Внутри сети Docker
     # порт остаётся 8765, поэтому OUROBOROS_URL приложения от этого не зависит.
     ports:
       - "127.0.0.1:${OUROBOROS_HOST_PORT:-8766}:8765"
+    # tini как настоящий PID 1 вместо server.py: без этого форкнутые воркеры иногда
+    # ошибочно решают, что родитель умер (getppid меняется под Docker Desktop/WSL2),
+    # и убивают сами себя — supervisor уходит в crash_storm ещё до первой задачи.
+    init: true
     # Сервер штатно перезапускает себя кодом выхода 42; без этого он бы умирал.
     restart: unless-stopped
+    depends_on:
+      settings-seed:
+        condition: service_completed_successfully
+
+  # Одноразовый сервис: записывает параметры проекта в data/settings.json.
+  # Окружение в Ouroboros применяется только к ключам, которых в файле нет, а любое
+  # owner-действие в веб-интерфейсе переписывает файл целиком, сливая эталонные
+  # дефолты с файлом. Значение, лежащее в файле, такую перезапись переживает;
+  # жившее только в .env — подменяется дефолтом молча. Разбор в самом скрипте.
+  #
+  # Строго ДО рантайма, а не после: часть ключей читается на старте сервера.
+  # Собственный build нужен по той же причине — settings-seed стартует раньше
+  # ouroboros, и к его запуску образ должен существовать.
+  settings-seed:
+    build:
+      context: .
+      dockerfile: vendor/ouroboros.Dockerfile
+    image: petro-market-analyst-ouroboros
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment: *runtime-env
+    command: ["python", "scripts/seed_settings.py"]
+    restart: "no"
+
+  # Одноразовый сервис: доводит собственные скиллы из ./skills до включённого
+  # состояния и завершается. Сам рантайм этого не делает — его автоматика при старте
+  # штампует вердикт ревью только засеянным native-скиллам, а внешние ждут владельца.
+  #
+  # depends_on гарантирует лишь порядок запуска, а не готовность, поэтому скрипт
+  # дожидается ответа /api/state сам. restart: "no" — иначе compose поднимал бы его
+  # заново после штатного завершения.
+  skill-enable:
+    image: petro-market-analyst-ouroboros
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment:
+      OUROBOROS_URL: http://ouroboros:8765
+      OUROBOROS_NETWORK_PASSWORD: ${OUROBOROS_NETWORK_PASSWORD:-}
+    command: ["python", "scripts/enable_own_skills.py"]
+    depends_on:
+      - ouroboros
+    restart: "no"
 
   app:
     build:

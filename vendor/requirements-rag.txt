@@ -1,0 +1,13 @@
+# Зависимости RAG-скилла petro-rag, доезжающие в образ рантайма.
+#
+# Почему не через `dependencies:` в SKILL.md: объявленная в манифесте зависимость
+# переводит скилл в out-of-process режим, и модели грузились бы заново на каждый
+# вызов инструмента (extension_process_runner.py: extension_requires_process_isolation).
+#
+# pypdf здесь нет намеренно — он уже в requirements самого Ouroboros (>=4.0).
+# numpy, onnxruntime и tokenizers приезжают транзитивно; версии выбирает резолвер,
+# они общие у chromadb и fastembed.
+
+chromadb>=1.0,<2
+fastembed>=0.5,<0.8
+langchain-text-splitters>=0.3,<1.0

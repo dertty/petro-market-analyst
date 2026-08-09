@@ -55,7 +55,16 @@ DISABLED_TOOLS = [
 # достраивается не от корня проекта, а от workspace_root → repo_dir → ..., и у
 # аналитика workspace_root пуст, так что "skills" превратилось бы в
 # /workspace/vendor/ouroboros/skills — защита выглядела бы настроенной, но не работала.
-PROTECTED_PATHS = ["/workspace/skills", "/workspace/vendor", "/workspace/app"]
+PROTECTED_PATHS = [
+    "/workspace/skills",
+    "/workspace/vendor",
+    "/workspace/app",
+    "/workspace/scripts",
+    # База отчётов и векторный индекс: задача читает их через инструмент поиска,
+    # писать туда ей незачем. Пополнение корпуса идёт мимо агента — файлом в
+    # reports/pdf и пересборкой индекса.
+    "/workspace/reports",
+]
 
 _FINAL_STATUSES = {"completed", "failed", "cancelled", "timeout", "error"}
 
@@ -73,11 +82,13 @@ def _headers() -> Dict[str, str]:
 def answer_text(task: Dict[str, Any]) -> str:
     """Текст ответа из результата задачи.
 
-    final_answer — только то, что стоит после маркера, и он намеренно пуст, когда
-    задача завершилась частичным успехом. Полный текст лежит в поле result верхнего
-    уровня. Поля final_text в отдаваемом результате нет — оно внутри loop_outcome.
+    Полный текст лежит в поле result верхнего уровня, его и берём. final_answer —
+    лишь подстраховка: без answer_protocol="final_answer_line" в контракте задачи
+    он пуст, а с протоколом содержал бы одну строку после маркера и заставлял
+    модель дублировать короткие ответы строкой FINAL ANSWER. Поля final_text в
+    отдаваемом результате нет — оно внутри loop_outcome.
     """
-    return str(task.get("final_answer") or task.get("result") or "").strip()
+    return str(task.get("result") or task.get("final_answer") or "").strip()
 
 
 class OuroborosError(RuntimeError):
@@ -114,9 +125,6 @@ class OuroborosClient:
     async def create_task(self, description: str, question: str, session_id: str) -> str:
         body = {
             "description": description,
-            # Единственный переключатель, дающий машинно-извлекаемый ответ. Без него
-            # final_answer пуст — самая частая причина «ответ не пришёл».
-            "answer_protocol": "final_answer_line",
             "timeout_sec": TASK_TIMEOUT_SEC,
             # Свой каталог данных на задачу: пустой журнал переписки, скопированная
             # база знаний. Так между сессиями и пользователями не течёт ничего.

@@ -221,12 +221,13 @@ function startPolling(taskId) {
 
 async function finish(taskId) {
   if (currentTask !== taskId) return;
+  const r = await fetch(`/result/${taskId}`);
+  const d = await r.json();
+  if (!d.final) return;   // task_result пришёл на промежуточный статус — это не конец
+
   clearInterval(poller); poller = null;
   if (source) { source.close(); source = null; }
   stopTimer();
-
-  const r = await fetch(`/result/${taskId}`);
-  const d = await r.json();
 
   const ok = d.status === "completed";
   const cost = d.cost_usd == null ? "" : ` · $${Number(d.cost_usd).toFixed(4)}`;

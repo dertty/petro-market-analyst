@@ -65,6 +65,11 @@ async def _history(client: oc.OuroborosClient, session_id: str) -> List[Tuple[st
     """Пары (вопрос, ответ) завершённых задач сессии — то, что уедет в описание."""
     pairs: List[Tuple[str, str]] = []
     for task in await _session_tasks(client, session_id):
+        # Только успешно завершённые: у идущей задачи в result лежит «Task is
+        # running.», у упавшей — текст аварии, и это уехало бы в контекст
+        # следующего вопроса как «предыдущий ответ».
+        if str(task.get("status") or "").lower() != "completed":
+            continue
         question = oc.question_of(task)
         answer = oc.answer_text(task)
         if question and answer:
@@ -198,8 +203,7 @@ async def ready() -> JSONResponse:
     except oc.OuroborosError as exc:
         return JSONResponse({"ready": False, "error": str(exc)}, status_code=503)
 
-    workers = int(state.get("workers_total") or 0)
-    if not state.get("supervisor_ready") or workers < 1:
+    if not state.get("supervisor_ready"):
         return JSONResponse(
             {
                 "ready": False,
