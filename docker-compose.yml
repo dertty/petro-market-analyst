@@ -59,6 +59,11 @@ services:
       # дефолт по нему — $5/$30 за M, самый дорогой тариф в сборке.
       OUROBOROS_MODEL_DEEP_SELF_REVIEW: ${OUROBOROS_MODEL_DEEP_SELF_REVIEW:-}
       OUROBOROS_WEBSEARCH_MODEL: ${OUROBOROS_WEBSEARCH_MODEL:-}
+      # Где рантайм ищет свои скиллы. Путь смонтированный, не хостовый — совпадает
+      # с целью тома ./skills выше. Без него list_skills отвечает SKILLS_UNAVAILABLE:
+      # префлайт довольствуется либо этим путём, либо скиллами в каталоге задачи,
+      # а тот у нас всегда пуст (memory_mode=forked). Разбор — в .env.example.
+      OUROBOROS_SKILLS_REPO_PATH: ${OUROBOROS_SKILLS_REPO_PATH:-/workspace/data/skills/external}
       # Поиск по отчётам (скилл petro_rag). Модели сменные: строка вида
       # <провайдер>:<модель>, поддерживаются fastembed (локально) и openai (API).
       # Смена эмбеддера требует пересборки индекса — векторы несравнимы.

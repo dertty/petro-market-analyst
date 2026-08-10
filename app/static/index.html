@@ -85,6 +85,8 @@
   .answer code { background: #f2efe9; padding: 1px 5px; border-radius: 4px; }
   .banner { padding: 11px 14px; border-radius: 8px; margin-bottom: 18px;
             background: #fdf1ee; border: 1px solid #e8c4ba; color: #8a3220; }
+  .asked { margin-top: 22px; padding-left: 14px; border-left: 3px solid var(--line);
+           white-space: pre-wrap; }
   .hidden { display: none; }
 </style>
 </head>
@@ -105,6 +107,8 @@
     <span class="empty">Ctrl+Enter — отправить. Ответ занимает несколько минут.</span>
     <button class="primary" id="askBtn">Спросить</button>
   </div>
+
+  <div class="asked hidden" id="asked"></div>
 
   <div class="status hidden" id="status">
     <span class="dot" id="dot"></span>
@@ -139,6 +143,14 @@ function banner(text) {
   if (!text) { $("banner").classList.add("hidden"); return; }
   $("banner").textContent = text;
   $("banner").classList.remove("hidden");
+}
+
+// Заданный вопрос над ответом. В поле ввода он остаётся только у живого запроса,
+// а у задачи из истории там лежит черновик — без этого блока вопрос не виден.
+function showAsked(text) {
+  if (!text) { $("asked").classList.add("hidden"); return; }
+  $("asked").textContent = text;
+  $("asked").classList.remove("hidden");
 }
 
 function setStatus(kind, text, cancelable) {
@@ -252,6 +264,7 @@ async function ask() {
   const question = $("q").value.trim();
   if (!question) return;
   banner("");
+  showAsked(question);
   $("askBtn").disabled = true;
   $("answer").classList.add("hidden");
   $("feed").innerHTML = "";
@@ -303,15 +316,19 @@ async function loadHistory() {
     meta.className = "meta";
     meta.textContent = `${time}${cost} · ${t.status}`;
     li.append(q, meta);
-    li.onclick = () => showSaved(t.task_id);
+    li.onclick = () => showSaved(t.task_id, t.question);
     ul.appendChild(li);
   }
 }
 
-async function showSaved(taskId) {
+async function showSaved(taskId, question) {
+  // Пустой id ушёл бы в /result/ — маршрута с пустым параметром нет, и вместо
+  // ответа пришло бы 404 без поля status, то есть «Статус: undefined».
+  if (!taskId) { banner("У задачи нет идентификатора — открыть ответ нельзя."); return; }
   const r = await fetch(`/result/${taskId}`);
   const d = await r.json();
   currentTask = taskId;
+  showAsked(question);
   $("feedBox").classList.add("hidden");
   if (d.answer_html) {
     $("answer").innerHTML = d.answer_html;
@@ -354,6 +371,7 @@ $("newSession").onclick = () => {
   $("answer").classList.add("hidden");
   $("feedBox").classList.add("hidden");
   $("status").classList.add("hidden");
+  showAsked("");
   banner("");
   loadHistory();
 };

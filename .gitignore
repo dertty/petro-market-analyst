@@ -12,4 +12,5 @@ __pycache__/
 # Кэши инструментов и артефакты прогонов — не часть проекта
 .firecrawl/
 .playwright-mcp/
+.pytest_cache/
 eval_runs/

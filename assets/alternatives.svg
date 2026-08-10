@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="646" viewBox="0 0 940 646" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#fffbeb"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#fcd34d" stroke-width="2.2"/>
+    </pattern>
+  </defs>
+
+  <!-- фон -->
+  <rect x="1" y="1" width="938" height="644" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+
+  <text x="40" y="36" font-size="13.5" font-weight="600" fill="#0f172a">Как использовать Ouroboros: четыре отвергнутых варианта и выбранный</text>
+
+  <!-- общая для всех вариантов часть -->
+  <rect x="40" y="52" width="860" height="38" rx="10" fill="#ffffff" stroke="#475569" stroke-width="1.5"/>
+  <text x="56" y="76" font-size="12" font-weight="600" fill="#0f172a">Браузер → приложение на FastAPI: интерфейс, сессии, история вкладки</text>
+  <text x="884" y="76" text-anchor="end" font-size="10.5" font-style="italic" fill="#64748b">нужно при любом варианте — в сравнении не участвует</text>
+
+  <!-- ─── Ряд 1: варианты с LangGraph ─── -->
+  <text x="40" y="112" font-size="11" font-style="italic" fill="#64748b">Варианты с LangGraph</text>
+
+  <!-- A -->
+  <rect x="40" y="124" width="270" height="196" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="54" y="148" font-size="12.5" font-weight="600" fill="#0f172a">A. Всё на LangGraph</text>
+
+  <rect x="54" y="160" width="242" height="40" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="175" y="178" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">граф LangGraph</text>
+  <text x="175" y="193" text-anchor="middle" font-size="10" fill="#64748b">свой цикл, свои узлы</text>
+
+  <line x1="175" y1="200" x2="175" y2="212" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="54" y="216" width="242" height="90" rx="8" fill="url(#hatch)" stroke="#f59e0b"/>
+  <text x="175" y="235" text-anchor="middle" font-size="11" font-weight="600" fill="#0f172a">делать заново</text>
+  <text x="175" y="253" text-anchor="middle" font-size="10.5" fill="#0f172a">цикл инструментов, бюджет,</text>
+  <text x="175" y="269" text-anchor="middle" font-size="10.5" fill="#0f172a">изоляция памяти задачи,</text>
+  <text x="175" y="285" text-anchor="middle" font-size="10.5" fill="#0f172a">реестр и ревью скиллов,</text>
+  <text x="175" y="301" text-anchor="middle" font-size="10.5" fill="#0f172a">четыре поисковых скилла хаба</text>
+
+  <text x="175" y="338" text-anchor="middle" font-size="10.5" fill="#64748b">всё это в Ouroboros уже есть</text>
+
+  <!-- B1 -->
+  <rect x="335" y="124" width="270" height="196" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="349" y="148" font-size="12.5" font-weight="600" fill="#0f172a">B1. LangGraph снаружи</text>
+
+  <rect x="349" y="160" width="242" height="62" rx="8" fill="url(#hatch)" stroke="#f59e0b"/>
+  <text x="470" y="179" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">граф: история вопросов,</text>
+  <text x="470" y="195" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">классификация запроса,</text>
+  <text x="470" y="211" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">постобработка ответа</text>
+
+  <line x1="470" y1="222" x2="470" y2="234" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="482" y="232" font-size="9.5" fill="#64748b">сложное</text>
+
+  <rect x="349" y="238" width="242" height="68" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="470" y="260" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">Ouroboros</text>
+  <text x="470" y="277" text-anchor="middle" font-size="10.5" fill="#64748b">полный цикл инструментов</text>
+  <text x="470" y="293" text-anchor="middle" font-size="10.5" fill="#64748b">со своим бюджетом</text>
+
+  <text x="470" y="338" text-anchor="middle" font-size="10.5" fill="#64748b">два цикла; классификатор ошибается молча</text>
+
+  <!-- B2 -->
+  <rect x="630" y="124" width="270" height="196" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="644" y="148" font-size="12.5" font-weight="600" fill="#0f172a">B2. LangGraph-агент скиллом</text>
+
+  <rect x="644" y="160" width="242" height="62" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="765" y="180" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">Ouroboros</text>
+  <text x="765" y="197" text-anchor="middle" font-size="10.5" fill="#64748b">управление запусками,</text>
+  <text x="765" y="213" text-anchor="middle" font-size="10.5" fill="#64748b">уточнение, переработка, фиксы</text>
+
+  <line x1="765" y1="222" x2="765" y2="234" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="644" y="238" width="242" height="68" rx="8" fill="url(#hatch)" stroke="#f59e0b"/>
+  <text x="765" y="259" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">скилл = LangGraph-агент</text>
+  <text x="765" y="277" text-anchor="middle" font-size="10.5" fill="#0f172a">быстрый базовый ответ,</text>
+  <text x="765" y="293" text-anchor="middle" font-size="10.5" fill="#0f172a">но свой цикл внутри</text>
+
+  <text x="765" y="338" text-anchor="middle" font-size="10.5" fill="#64748b">базовый ответ рантайм собирает и сам</text>
+
+  <!-- ─── Ряд 2: варианты внутри Ouroboros ─── -->
+  <text x="40" y="370" font-size="11" font-style="italic" fill="#64748b">Варианты внутри Ouroboros</text>
+
+  <!-- C -->
+  <rect x="40" y="382" width="270" height="180" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="54" y="406" font-size="12.5" font-weight="600" fill="#0f172a">C. Эволюция рантайма</text>
+
+  <rect x="54" y="418" width="242" height="44" rx="8" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="175" y="438" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">Ouroboros advanced</text>
+  <text x="175" y="454" text-anchor="middle" font-size="10" fill="#64748b">режим по умолчанию</text>
+
+  <line x1="175" y1="462" x2="175" y2="474" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="54" y="478" width="242" height="68" rx="8" fill="#fef2f2" stroke="#f87171"/>
+  <text x="175" y="500" text-anchor="middle" font-size="11" fill="#0f172a">агент правит собственный</text>
+  <text x="175" y="518" text-anchor="middle" font-size="11" fill="#0f172a">репозиторий и запускает</text>
+  <text x="175" y="536" text-anchor="middle" font-size="11" fill="#0f172a">эволюцию</text>
+
+  <text x="175" y="580" text-anchor="middle" font-size="10.5" fill="#64748b">долго и трудно проверить;</text>
+  <text x="175" y="596" text-anchor="middle" font-size="10.5" fill="#64748b">открыт путь инъекции</text>
+
+  <!-- D -->
+  <rect x="335" y="382" width="565" height="180" rx="12" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+  <text x="349" y="406" font-size="12.5" font-weight="600" fill="#0f172a">D. Ouroboros в режиме light</text>
+
+  <rect x="806" y="392" width="80" height="22" rx="11" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="846" y="407" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">выбрано</text>
+
+  <rect x="349" y="418" width="537" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="617" y="440" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">Ouroboros: цикл инструментов, бюджет, изоляция памяти задачи,</text>
+  <text x="617" y="459" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">реестр и ревью скиллов, поисковые скиллы хаба</text>
+
+  <line x1="617" y1="478" x2="617" y2="490" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="349" y="494" width="537" height="52" rx="8" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="617" y="515" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0f172a">своё, под git: два скилла — oil_price_forecast и petro_rag — и база знаний</text>
+  <text x="617" y="534" text-anchor="middle" font-size="10.5" fill="#64748b">методика аналитика и контракт ответа — knowledge/</text>
+
+  <text x="617" y="580" text-anchor="middle" font-size="10.5" fill="#64748b">ничего не делается дважды</text>
+
+  <!-- легенда -->
+  <rect x="40" y="612" width="16" height="13" rx="3" fill="url(#hatch)" stroke="#f59e0b"/>
+  <text x="64" y="623" font-size="10.5" fill="#64748b">— то, что Ouroboros уже делает: в этих вариантах пришлось бы написать заново и дальше поддерживать в двух местах.</text>
+</svg>

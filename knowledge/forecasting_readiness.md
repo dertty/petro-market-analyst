@@ -1,0 +1,3 @@
+Перед рыночным прогнозом проверять доступность skills, базы знаний и модулей forecast/supply_shock/demand_shock/macro_snapshot; при отказе заранее переключаться на документированный ручной fallback.
+Перед рыночным прогнозом проверять discoverability skills, доступность forecasting-модулей и успешность чтения forecasting knowledge; при сбое явно переключаться на документированный fallback с диапазонами чувствительности и аудитом входных данных.
+Перед рыночным прогнозом проверять list_skills и доступность forecast/supply_shock/demand_shock/macro_snapshot; при SKILLS_UNAVAILABLE явно переходить на документированный web-source fallback и не выдавать собственный числовой диапазон без расчётного модуля.

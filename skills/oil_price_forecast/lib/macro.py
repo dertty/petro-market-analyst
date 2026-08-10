@@ -359,7 +359,7 @@ def _blocks(entries: Dict[str, Dict]) -> Dict[str, List[Dict]]:
 
 
 def load_macro(state_dir: pathlib.Path) -> Dict:
-    """Макрофон: кэш моложе суток целиком, иначе — посерийное обновление с фолбэком."""
+    """Макрофон: свежий кэш отдаётся целиком, иначе — посерийное обновление с фолбэком."""
     cache_file = _cache_path(state_dir)
     cached = _read_cache(cache_file)
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")

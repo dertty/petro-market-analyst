@@ -170,7 +170,7 @@ async def history(session_id: str = "") -> JSONResponse:
         {
             "tasks": [
                 {
-                    "task_id": str(task.get("id") or ""),
+                    "task_id": str(task.get("task_id") or ""),
                     "question": oc.question_of(task),
                     "status": str(task.get("status") or ""),
                     "ts": str(task.get("ts") or ""),

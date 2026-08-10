@@ -1,0 +1,2 @@
+Для рыночных обзоров проверять доступность skills до начала работы; числовые котировки и прогнозы подтверждать первичными источниками (EIA, OPEC, ICE/CME) с URL и timestamp, а не только значением, заданным в run_script.
+For time-sensitive EIA STEO research, validate the current official release URL from search results before fetching guessed browser-data XLSX/JSON paths; use the release HTML/PDF or documented download links as fallback.
