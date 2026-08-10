@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 214" width="940" height="214" role="img" aria-label="Пять метрик по четырём прогонам 10 августа 2026 года на одних и тех же пяти вопросах: соответствие протоколу 44, 27, 72, 92 процента; экспертная оценка 80, 70, 80, 80 процентов; латентность 653, 552, 312, 299 секунд; длина траектории 22,6, 15,6, 13,0, 11,8 раунда; стоимость ответа 0,190, 0,164, 0,142, 0,121 доллара">
+  <style>
+  :root {
+    --card: #f6f8fa; --edge: #d0d7de; --text: #1f2328;
+    --muted: #656d76; --line: #8250df; --good: #1a7f37; --rule: #d8dee4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --card: #161b22; --edge: #30363d; --text: #e6edf3;
+      --muted: #8b949e; --line: #a371f7; --good: #3fb950; --rule: #21262d;
+    }
+  }
+  .card { fill: var(--card); stroke: var(--edge); }
+  .ttl { fill: var(--text); font: 600 11.5px -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+  .sub { fill: var(--muted); font: 9.5px -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+  .val { fill: var(--text); font: 600 9.5px -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+  .last { fill: var(--good); font: 700 10.5px -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+  .tick { fill: var(--muted); font: 8.5px -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+  .dlt { fill: var(--good); font: 600 10px -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+  .flat { fill: var(--muted); font: 600 10px -apple-system, Segoe UI, Helvetica, Arial, sans-serif; }
+  .rule { stroke: var(--rule); stroke-width: 1; }
+  .ln { stroke: var(--line); stroke-width: 2; fill: none; stroke-linejoin: round; }
+  .pt { fill: var(--card); stroke: var(--line); stroke-width: 2; }
+  .pt-last { fill: var(--good); stroke: var(--good); stroke-width: 2; }
+  </style>
+  <g transform="translate(8,0)">
+    <rect class="card" x="0.5" y="0.5" width="171" height="213" rx="8"/>
+    <text class="ttl" x="12" y="22">Соответствие протоколу</text>
+    <text class="sub" x="12" y="37">%, выше — лучше</text>
+    <line class="rule" x1="12" y1="47" x2="160" y2="47"/>
+    <line class="rule" x1="12" y1="168" x2="160" y2="168"/>
+    <polyline class="ln" points="24.0,123.4 65.3,139.1 106.7,97.4 148.0,78.9"/>
+    <circle class="pt" cx="24.0" cy="123.4" r="3.5"/>
+    <text class="val" x="24.0" y="113.4" text-anchor="middle">44</text>
+    <text class="tick" x="24.0" y="182" text-anchor="middle">02:39</text>
+    <circle class="pt" cx="65.3" cy="139.1" r="3.5"/>
+    <text class="val" x="65.3" y="129.1" text-anchor="middle">27</text>
+    <text class="tick" x="65.3" y="182" text-anchor="middle">03:31</text>
+    <circle class="pt" cx="106.7" cy="97.4" r="3.5"/>
+    <text class="val" x="106.7" y="87.4" text-anchor="middle">72</text>
+    <text class="tick" x="106.7" y="182" text-anchor="middle">04:33</text>
+    <circle class="pt-last" cx="148.0" cy="78.9" r="4"/>
+    <text class="last" x="148.0" y="68.9" text-anchor="middle">92</text>
+    <text class="tick" x="148.0" y="182" text-anchor="middle">07:26</text>
+    <text class="dlt" x="12" y="202">+48 п. п.</text>
+  </g>
+  <g transform="translate(196,0)">
+    <rect class="card" x="0.5" y="0.5" width="171" height="213" rx="8"/>
+    <text class="ttl" x="12" y="22">Экспертная оценка</text>
+    <text class="sub" x="12" y="37">%, выше — лучше</text>
+    <line class="rule" x1="12" y1="47" x2="160" y2="47"/>
+    <line class="rule" x1="12" y1="168" x2="160" y2="168"/>
+    <polyline class="ln" points="24.0,78.9 65.3,139.1 106.7,78.9 148.0,78.9"/>
+    <circle class="pt" cx="24.0" cy="78.9" r="3.5"/>
+    <text class="val" x="24.0" y="68.9" text-anchor="middle">80</text>
+    <text class="tick" x="24.0" y="182" text-anchor="middle">02:39</text>
+    <circle class="pt" cx="65.3" cy="139.1" r="3.5"/>
+    <text class="val" x="65.3" y="129.1" text-anchor="middle">70</text>
+    <text class="tick" x="65.3" y="182" text-anchor="middle">03:31</text>
+    <circle class="pt" cx="106.7" cy="78.9" r="3.5"/>
+    <text class="val" x="106.7" y="68.9" text-anchor="middle">80</text>
+    <text class="tick" x="106.7" y="182" text-anchor="middle">04:33</text>
+    <circle class="pt" cx="148.0" cy="78.9" r="3.5"/>
+    <text class="val" x="148.0" y="68.9" text-anchor="middle">80</text>
+    <text class="tick" x="148.0" y="182" text-anchor="middle">07:26</text>
+    <text class="flat" x="12" y="202">без изменений</text>
+  </g>
+  <g transform="translate(384,0)">
+    <rect class="card" x="0.5" y="0.5" width="171" height="213" rx="8"/>
+    <text class="ttl" x="12" y="22">Латентность</text>
+    <text class="sub" x="12" y="37">секунды, ниже — лучше</text>
+    <line class="rule" x1="12" y1="47" x2="160" y2="47"/>
+    <line class="rule" x1="12" y1="168" x2="160" y2="168"/>
+    <polyline class="ln" points="24.0,78.9 65.3,96.1 106.7,136.9 148.0,139.1"/>
+    <circle class="pt" cx="24.0" cy="78.9" r="3.5"/>
+    <text class="val" x="24.0" y="68.9" text-anchor="middle">653</text>
+    <text class="tick" x="24.0" y="182" text-anchor="middle">02:39</text>
+    <circle class="pt" cx="65.3" cy="96.1" r="3.5"/>
+    <text class="val" x="65.3" y="86.1" text-anchor="middle">552</text>
+    <text class="tick" x="65.3" y="182" text-anchor="middle">03:31</text>
+    <circle class="pt" cx="106.7" cy="136.9" r="3.5"/>
+    <text class="val" x="106.7" y="126.9" text-anchor="middle">312</text>
+    <text class="tick" x="106.7" y="182" text-anchor="middle">04:33</text>
+    <circle class="pt-last" cx="148.0" cy="139.1" r="4"/>
+    <text class="last" x="148.0" y="129.1" text-anchor="middle">299</text>
+    <text class="tick" x="148.0" y="182" text-anchor="middle">07:26</text>
+    <text class="dlt" x="12" y="202">−54 %</text>
+  </g>
+  <g transform="translate(572,0)">
+    <rect class="card" x="0.5" y="0.5" width="171" height="213" rx="8"/>
+    <text class="ttl" x="12" y="22">Длина траектории</text>
+    <text class="sub" x="12" y="37">раунды, ниже — лучше</text>
+    <line class="rule" x1="12" y1="47" x2="160" y2="47"/>
+    <line class="rule" x1="12" y1="168" x2="160" y2="168"/>
+    <polyline class="ln" points="24.0,78.9 65.3,117.9 106.7,132.4 148.0,139.1"/>
+    <circle class="pt" cx="24.0" cy="78.9" r="3.5"/>
+    <text class="val" x="24.0" y="68.9" text-anchor="middle">22,6</text>
+    <text class="tick" x="24.0" y="182" text-anchor="middle">02:39</text>
+    <circle class="pt" cx="65.3" cy="117.9" r="3.5"/>
+    <text class="val" x="65.3" y="107.9" text-anchor="middle">15,6</text>
+    <text class="tick" x="65.3" y="182" text-anchor="middle">03:31</text>
+    <circle class="pt" cx="106.7" cy="132.4" r="3.5"/>
+    <text class="val" x="106.7" y="122.4" text-anchor="middle">13,0</text>
+    <text class="tick" x="106.7" y="182" text-anchor="middle">04:33</text>
+    <circle class="pt-last" cx="148.0" cy="139.1" r="4"/>
+    <text class="last" x="148.0" y="129.1" text-anchor="middle">11,8</text>
+    <text class="tick" x="148.0" y="182" text-anchor="middle">07:26</text>
+    <text class="dlt" x="12" y="202">−48 %</text>
+  </g>
+  <g transform="translate(760,0)">
+    <rect class="card" x="0.5" y="0.5" width="171" height="213" rx="8"/>
+    <text class="ttl" x="12" y="22">Стоимость ответа</text>
+    <text class="sub" x="12" y="37">доллары, ниже — лучше</text>
+    <line class="rule" x1="12" y1="47" x2="160" y2="47"/>
+    <line class="rule" x1="12" y1="168" x2="160" y2="168"/>
+    <polyline class="ln" points="24.0,78.9 65.3,101.4 106.7,120.9 148.0,139.1"/>
+    <circle class="pt" cx="24.0" cy="78.9" r="3.5"/>
+    <text class="val" x="24.0" y="68.9" text-anchor="middle">0,190</text>
+    <text class="tick" x="24.0" y="182" text-anchor="middle">02:39</text>
+    <circle class="pt" cx="65.3" cy="101.4" r="3.5"/>
+    <text class="val" x="65.3" y="91.4" text-anchor="middle">0,164</text>
+    <text class="tick" x="65.3" y="182" text-anchor="middle">03:31</text>
+    <circle class="pt" cx="106.7" cy="120.9" r="3.5"/>
+    <text class="val" x="106.7" y="110.9" text-anchor="middle">0,142</text>
+    <text class="tick" x="106.7" y="182" text-anchor="middle">04:33</text>
+    <circle class="pt-last" cx="148.0" cy="139.1" r="4"/>
+    <text class="last" x="148.0" y="129.1" text-anchor="middle">0,121</text>
+    <text class="tick" x="148.0" y="182" text-anchor="middle">07:26</text>
+    <text class="dlt" x="12" y="202">−36 %</text>
+  </g>
+</svg>
